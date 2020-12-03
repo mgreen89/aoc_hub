@@ -1,11 +1,14 @@
 port module State exposing (initialModel, subscriptions, update)
 
+import Dict exposing (Dict)
 import EnTrance.Channel as Channel
-import InsecureShell
+import EnTrance.Request exposing (new)
 import Json.Decode exposing (Decoder)
 import RemoteData exposing (RemoteData(..))
 import Response exposing (pure)
 import Types exposing (..)
+import UserDatabase
+import UserType exposing (User)
 
 
 {-| PORTS
@@ -34,8 +37,12 @@ port errorRecv : Channel.ErrorRecvPort msg
 
 initialModel : Model
 initialModel =
-    { cmdText = ""
-    , result = NotAsked
+    { participants = Dict.fromList [ ( "Jackson", User "Jackson" "https://github.com/jacksonriley/aoc2020" "Rust" ) ]
+    , newName = ""
+    , newRepoUrl = ""
+    , newLanguages = ""
+    , storeResult = NotAsked
+    , getResult = NotAsked
     , isUp = False
     , errors = []
     , sendPort = appSend
@@ -53,7 +60,7 @@ subscriptions =
 
 notifications : List (Decoder Msg)
 notifications =
-    [ InsecureShell.decodeCmd GotResult ]
+    [ UserDatabase.decodeStoreNewUserCmd GotStoreResult ]
 
 
 
@@ -63,15 +70,37 @@ notifications =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        Input cmdText ->
-            pure { model | cmdText = cmdText }
+        NameInput newName ->
+            pure { model | newName = newName }
+
+        RepoUrlInput newRepoUrl ->
+            pure { model | newRepoUrl = newRepoUrl }
+
+        LanguagesInput newLanguages ->
+            pure { model | newLanguages = newLanguages }
 
         RunCmd ->
-            InsecureShell.cmd model.cmdText
-                |> Channel.sendSimpleRpc model
+            UserDatabase.storeNewUserCmd model.newName model.newRepoUrl model.newLanguages
+                |> Channel.sendRpc
+                    { model
+                        | participants =
+                            Dict.insert model.newName
+                                (User model.newName
+                                    model.newRepoUrl
+                                    model.newLanguages
+                                )
+                                model.participants
+                        , newName = ""
+                        , newRepoUrl = ""
+                        , newLanguages = ""
+                        , storeResult = Loading
+                    }
 
-        GotResult result ->
-            pure { model | result = result }
+        GotStoreResult result ->
+            pure { model | storeResult = result }
+
+        GotGetResult result ->
+            pure { model | getResult = result }
 
         ChannelIsUp isUp ->
             pure { model | isUp = isUp }

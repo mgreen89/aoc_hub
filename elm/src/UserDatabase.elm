@@ -1,0 +1,98 @@
+module UserDatabase exposing
+    ( StoreNewUserCmdResult
+    , storeNewUserCmd
+    , decodeStoreNewUserCmd
+    , GetAllUsersCmdResult
+    , getAllUsersCmd
+    , decodeGetAllUsersCmdResult
+    )
+
+{-| This module provides a client-side typesafe interface to the
+`insecure_shell` server-side feature, that runs an arbitrary shell command on
+the server and sends back the result.
+
+The feature is bespoke to this sample app (see `svr/run.py` for the other half)
+but this is written as a standalone module that can be re-used as is.
+
+@docs StoreNewUserCmdResult
+@docs storeNewUserCmd
+@docs decodeStoreNewUserCmd
+
+-}
+import Dict exposing (Dict)
+import EnTrance.Feature.Gen as Gen
+import EnTrance.Request as Request exposing (Request)
+import EnTrance.Types exposing (RpcData)
+import Json.Decode as Decode exposing (Decoder)
+import UserType exposing (User)
+
+
+-------------------------------------------------------------------------------
+-- Store new user
+
+type alias StoreNewUserCmdResult =
+    { exitCode : Int }
+
+
+{-| Request to do a command.
+-}
+storeNewUserCmd : String -> String -> String -> Request
+storeNewUserCmd name url languages =
+    Request.new "store_new_user"
+        |> Request.addString "name" name
+        |> Request.addString "url" url
+        |> Request.addString "languages" languages
+
+
+{-| Decode notifications from the server. Takes a message constructor.
+-}
+decodeStoreNewUserCmd : (RpcData StoreNewUserCmdResult -> msg) -> Decoder msg
+decodeStoreNewUserCmd makeMsg =
+    Gen.decodeRpc "store_new_user" decodeStoreNewUserCmdResult
+        |> Decode.map makeMsg
+
+
+decodeStoreNewUserCmdResult : Decoder StoreNewUserCmdResult
+decodeStoreNewUserCmdResult =
+    Decode.map StoreNewUserCmdResult
+        (Decode.field "exit_code" Decode.int)
+
+-------------------------------------------------------------------------------
+-- Get all users
+
+type alias GetAllUsersCmdResult =
+    { users : String }
+
+getAllUsersCmd : Request
+getAllUsersCmd = Request.new "get_all_users"
+
+{-| Decode notifications from the server. Takes a message constructor.
+-}
+decodeGetAllUsersCmd : (RpcData GetAllUsersCmdResult -> msg) -> Decoder msg
+decodeGetAllUsersCmd makeMsg =
+    Gen.decodeRpc "store_new_user" decodeGetAllUsersCmdResult
+        |> Decode.map makeMsg
+
+decoder : Decoder (Dict String User)
+decoder =
+  Decode.map (Dict.map infoToUser) (Decode.dict infoDecoder)
+
+type alias Info =
+  { url : String
+  , languages : String
+  }
+
+infoDecoder : Decoder Info
+infoDecoder =
+  Decode.map2 Info
+    (Decode.field "url" Decode.string)
+    (Decode.field "languages" Decode.string)
+
+infoToUser : String -> Info -> User
+infoToUser name { url, languages } =
+  User name url languages
+
+decodeGetAllUsersCmdResult : Decoder GetAllUsersCmdResult
+decodeGetAllUsersCmdResult =
+    Decode.map GetAllUsersCmdResult
+        (Decode.field "users" Decode.string)

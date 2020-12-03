@@ -3,9 +3,11 @@ module Types exposing
     , Msg(..)
     )
 
+import Dict exposing (Dict)
 import EnTrance.Channel as Channel
 import EnTrance.Types exposing (RpcData)
-import InsecureShell exposing (CmdResult)
+import UserDatabase exposing (StoreNewUserCmdResult, GetAllUsersCmdResult)
+import UserType exposing (User)
 
 
 
@@ -13,8 +15,12 @@ import InsecureShell exposing (CmdResult)
 
 
 type alias Model =
-    { cmdText : String
-    , result : RpcData CmdResult
+    { participants : Dict String User
+    , newName : String
+    , newRepoUrl : String
+    , newLanguages : String
+    , storeResult : RpcData StoreNewUserCmdResult
+    , getResult : RpcData GetAllUsersCmdResult
     , isUp : Bool
     , errors : List String
     , sendPort : Channel.SendPort Msg
@@ -26,8 +32,11 @@ type alias Model =
 
 
 type Msg
-    = Input String
+    = NameInput String
     | RunCmd
-    | GotResult (RpcData CmdResult)
+    | RepoUrlInput String
+    | LanguagesInput String
+    | GotStoreResult (RpcData StoreNewUserCmdResult)
+    | GotGetResult (RpcData GetAllUsersCmdResult)
     | ChannelIsUp Bool
     | Error String

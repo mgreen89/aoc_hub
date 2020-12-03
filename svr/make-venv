@@ -4,7 +4,7 @@
 
 python3 -m venv venv
 venv/bin/pip3 install wheel
-venv/bin/pip3 install --upgrade entrance
+venv/bin/pip3 install --upgrade entrance ujson==1.35
 
 echo
 echo To run, enter ./run.py

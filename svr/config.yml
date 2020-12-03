@@ -17,4 +17,4 @@ features:
   core: {}
 
   # Our app-local feature!
-  insecure_shell: {}
+  user_database: {}

@@ -10,11 +10,13 @@ import Bootstrap.Form.InputGroup as InputGroup
 import Bootstrap.Grid as Grid
 import Bootstrap.Grid.Col as Col
 import Bootstrap.Progress as Progress
+import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import RemoteData exposing (RemoteData(..))
 import Types exposing (..)
+import UserType exposing (User)
 
 
 {-| Top-level view
@@ -24,27 +26,10 @@ view model =
     Grid.container []
         [ Grid.row []
             [ Grid.col colSpec
-                [ h4 [] [ text "EnTrance insecure shell example" ]
-                , viewInput model.cmdText model.isUp
-                , div [] (List.map (\x -> Alert.simpleDanger [] [ text x ]) model.errors)
-                , div [ class "result" ]
-                    [ case model.result of
-                        NotAsked ->
-                            div [ class "empty" ] [ text "No command issued" ]
-
-                        Loading ->
-                            Progress.progress [ Progress.value 100, Progress.animated ]
-
-                        Success result ->
-                            div []
-                                [ maybeCode result.exitCode
-                                , pre [ class "stdout" ] [ text result.stdout ]
-                                , pre [ class "stderr" ] [ text result.stderr ]
-                                ]
-
-                        Failure error ->
-                            div [ class "error" ] [ text ("Error: " ++ error) ]
-                    ]
+                [ h4 [] [ text "Ensoft AoC 2020" ]
+                , viewParticipants model.participants model.isUp
+                , br [] []
+                , viewInput model
                 ]
             ]
         ]
@@ -61,18 +46,52 @@ maybeCode exitCode =
         div [ class "stderr" ] [ text ("Exit code " ++ String.fromInt exitCode) ]
 
 
+formatUser : User -> Html msg
+formatUser user =
+    li [] [ a [ href user.repoUrl ] [ user.name ++ " " ++ user.repoUrl ++ " " ++ user.languages |> text ] ]
+
+
+viewParticipants : Dict String User -> Bool -> Html Msg
+viewParticipants participants isUp =
+    div []
+        [ ul [] (Dict.values participants |> List.map formatUser)
+        ]
+
+
 {-| View the input area
 -}
-viewInput : String -> Bool -> Html Msg
-viewInput dirText isUp =
+viewInput : Model -> Html Msg
+viewInput model =
     div []
         [ InputGroup.config
             (InputGroup.text
                 [ Input.attrs
-                    [ value dirText
+                    [ value model.newName
                     , autofocus True
-                    , onInput Input
-                    , placeholder "Shell command to execute on the server"
+                    , onInput NameInput
+                    , placeholder "Your name"
+                    ]
+                ]
+            )
+            |> InputGroup.view
+        , InputGroup.config
+            (InputGroup.text
+                [ Input.attrs
+                    [ value model.newRepoUrl
+                    , autofocus True
+                    , onInput RepoUrlInput
+                    , placeholder "Your repository URL"
+                    ]
+                ]
+            )
+            |> InputGroup.view
+        , InputGroup.config
+            (InputGroup.text
+                [ Input.attrs
+                    [ value model.newLanguages
+                    , autofocus True
+                    , onInput LanguagesInput
+                    , placeholder "The languages you're using"
                     ]
                 ]
             )
@@ -80,7 +99,7 @@ viewInput dirText isUp =
                 [ InputGroup.button
                     [ Button.outlineInfo
                     , Button.attrs [ onClick RunCmd ]
-                    , Button.disabled (not isUp)
+                    , Button.disabled (not model.isUp)
                     ]
                     [ text "Go!" ]
                 ]
