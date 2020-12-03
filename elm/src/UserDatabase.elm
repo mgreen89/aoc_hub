@@ -68,13 +68,6 @@ type alias GetAllUsersCmdResult =
     Dict String User
 
 
-
-{-
-   "[{"name": "Alice", "url": "some-url", "languages": "C, Python"},
-     {"name": "Bob", "url": "some-other-url", "languages": "Rust"}]"
--}
-
-
 getAllUsersCmd : Request
 getAllUsersCmd =
     Request.new "get_all_users"
@@ -88,7 +81,11 @@ decodeGetAllUsersCmd makeMsg =
         |> Decode.map makeMsg
 
 
-
+{-| Decode a JSON list into a GetAllUsersCmdResult
+The get\_all\_users response is of form:
+[{"name": "Alice", "url": "some-url", "languages": "C, Python"},
+{"name": "Bob", "url": "some-other-url", "languages": "Rust"}]
+-}
 decodeGetAllUsersCmdResult : Decoder GetAllUsersCmdResult
 decodeGetAllUsersCmdResult =
     let
@@ -99,10 +96,11 @@ decodeGetAllUsersCmdResult =
         |> Decode.map userListToDict
 
 
+{-| Decode a JSON object into a User
+-}
 decodeUser : Decoder User
 decodeUser =
     Decode.map3 User
         (Decode.field "name" Decode.string)
         (Decode.field "url" Decode.string)
         (Decode.field "languages" Decode.string)
-
