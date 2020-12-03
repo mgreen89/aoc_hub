@@ -2,7 +2,7 @@ module UserDatabase exposing
     ( StoreNewUserCmdResult
     , storeNewUserCmd
     , decodeStoreNewUserCmd
-    , GetAllUsersCmdResult, decodeGetAllUsersCmd, decoder, getAllUsersCmd
+    , GetAllUsersCmdResult, decodeGetAllUsersCmd, getAllUsersCmd
     )
 
 {-| This module provides a client-side typesafe interface to the
@@ -88,28 +88,6 @@ decodeGetAllUsersCmd makeMsg =
         |> Decode.map makeMsg
 
 
-decoder : Decoder (Dict String User)
-decoder =
-    Decode.map (Dict.map infoToUser) (Decode.dict infoDecoder)
-
-
-type alias Info =
-    { url : String
-    , languages : String
-    }
-
-
-infoDecoder : Decoder Info
-infoDecoder =
-    Decode.map2 Info
-        (Decode.field "url" Decode.string)
-        (Decode.field "languages" Decode.string)
-
-
-infoToUser : String -> Info -> User
-infoToUser name { url, languages } =
-    User name url languages
-
 
 decodeGetAllUsersCmdResult : Decoder GetAllUsersCmdResult
 decodeGetAllUsersCmdResult =
@@ -128,12 +106,3 @@ decodeUser =
         (Decode.field "url" Decode.string)
         (Decode.field "languages" Decode.string)
 
-
-decodeMe : Decoder (Dict String User)
-decodeMe =
-    let
-        userListToDict =
-            List.foldl (\u d -> Dict.insert u.name u d) Dict.empty
-    in
-    Decode.list decodeUser
-        |> Decode.map userListToDict

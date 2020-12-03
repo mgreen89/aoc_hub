@@ -79,7 +79,7 @@ class UserDatabaseFeature(ConfiguredFeature):
         #     }
         json_list = [v for (_, v) in users.items()]
         log.info("Sending {}".format(json.dumps(json_list)))
-        return self._rpc_success(json.dumps(json_list))
+        return self._rpc_success(json_list)
 
 
 # Start up
