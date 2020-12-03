@@ -60,7 +60,9 @@ subscriptions =
 
 notifications : List (Decoder Msg)
 notifications =
-    [ UserDatabase.decodeStoreNewUserCmd GotStoreResult ]
+    [ UserDatabase.decodeStoreNewUserCmd GotStoreResult
+    , UserDatabase.decodeGetAllUsersCmd GotGetResult
+    ]
 
 
 
@@ -79,7 +81,7 @@ update msg model =
         LanguagesInput newLanguages ->
             pure { model | newLanguages = newLanguages }
 
-        RunCmd ->
+        RunStoreCmd ->
             UserDatabase.storeNewUserCmd model.newName model.newRepoUrl model.newLanguages
                 |> Channel.sendRpc
                     { model
@@ -96,14 +98,37 @@ update msg model =
                         , storeResult = Loading
                     }
 
+        -- TODO?
+        RunGetCmd ->
+            pure model
+
         GotStoreResult result ->
             pure { model | storeResult = result }
 
         GotGetResult result ->
-            pure { model | getResult = result }
+            case result of
+                Success data ->
+                    pure
+                        { model
+                            | getResult = result
+                            , participants = data
+                        }
+
+                _ ->
+                    pure { model | getResult = result }
 
         ChannelIsUp isUp ->
-            pure { model | isUp = isUp }
+            case isUp of
+                True ->
+                    UserDatabase.getAllUsersCmd
+                        |> Channel.sendRpc
+                            { model
+                                | getResult = Loading
+                                , isUp = isUp
+                            }
+
+                False ->
+                    pure { model | isUp = isUp }
 
         Error error ->
             pure { model | errors = error :: model.errors }

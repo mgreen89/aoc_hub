@@ -67,12 +67,19 @@ class UserDatabaseFeature(ConfiguredFeature):
         if not os.path.exists('users.json'):
             users = {}
         else:
-            try:
-                users = json.load(f)
-                log.info("Loaded: ", users)
-            except json.decoder.JSONDecodeError:
-                users = {}
-        return self._rpc_success(dict(users=users))
+            with open("users.json", "r") as f:
+                try:
+                    users = json.load(f)
+                    log.info("Loaded: ", users)
+                except json.decoder.JSONDecodeError:
+                    users = {}
+        # Want to return 
+        #     { users: "[{"name": "Alice", "url": "some-url", "languages": "C, Python"},
+        #                {"name": "Bob", "url": "some-other-url", "languages": "Rust"}]"
+        #     }
+        json_list = [v for (_, v) in users.items()]
+        log.info("Sending {}".format(json.dumps(json_list)))
+        return self._rpc_success(json.dumps(json_list))
 
 
 # Start up

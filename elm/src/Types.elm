@@ -6,7 +6,7 @@ module Types exposing
 import Dict exposing (Dict)
 import EnTrance.Channel as Channel
 import EnTrance.Types exposing (RpcData)
-import UserDatabase exposing (StoreNewUserCmdResult, GetAllUsersCmdResult)
+import UserDatabase exposing (GetAllUsersCmdResult, StoreNewUserCmdResult)
 import UserType exposing (User)
 
 
@@ -33,7 +33,8 @@ type alias Model =
 
 type Msg
     = NameInput String
-    | RunCmd
+    | RunStoreCmd
+    | RunGetCmd
     | RepoUrlInput String
     | LanguagesInput String
     | GotStoreResult (RpcData StoreNewUserCmdResult)

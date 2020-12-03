@@ -98,7 +98,7 @@ viewInput model =
             |> InputGroup.successors
                 [ InputGroup.button
                     [ Button.outlineInfo
-                    , Button.attrs [ onClick RunCmd ]
+                    , Button.attrs [ onClick RunStoreCmd ]
                     , Button.disabled (not model.isUp)
                     ]
                     [ text "Go!" ]

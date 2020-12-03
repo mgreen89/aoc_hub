@@ -2,9 +2,7 @@ module UserDatabase exposing
     ( StoreNewUserCmdResult
     , storeNewUserCmd
     , decodeStoreNewUserCmd
-    , GetAllUsersCmdResult
-    , getAllUsersCmd
-    , decodeGetAllUsersCmdResult
+    , GetAllUsersCmdResult, decodeGetAllUsersCmd, decoder, getAllUsersCmd
     )
 
 {-| This module provides a client-side typesafe interface to the
@@ -19,6 +17,7 @@ but this is written as a standalone module that can be re-used as is.
 @docs decodeStoreNewUserCmd
 
 -}
+
 import Dict exposing (Dict)
 import EnTrance.Feature.Gen as Gen
 import EnTrance.Request as Request exposing (Request)
@@ -27,8 +26,10 @@ import Json.Decode as Decode exposing (Decoder)
 import UserType exposing (User)
 
 
+
 -------------------------------------------------------------------------------
 -- Store new user
+
 
 type alias StoreNewUserCmdResult =
     { exitCode : Int }
@@ -57,42 +58,82 @@ decodeStoreNewUserCmdResult =
     Decode.map StoreNewUserCmdResult
         (Decode.field "exit_code" Decode.int)
 
+
+
 -------------------------------------------------------------------------------
 -- Get all users
 
+
 type alias GetAllUsersCmdResult =
-    { users : String }
+    Dict String User
+
+
+
+{-
+   "[{"name": "Alice", "url": "some-url", "languages": "C, Python"},
+     {"name": "Bob", "url": "some-other-url", "languages": "Rust"}]"
+-}
+
 
 getAllUsersCmd : Request
-getAllUsersCmd = Request.new "get_all_users"
+getAllUsersCmd =
+    Request.new "get_all_users"
+
 
 {-| Decode notifications from the server. Takes a message constructor.
 -}
 decodeGetAllUsersCmd : (RpcData GetAllUsersCmdResult -> msg) -> Decoder msg
 decodeGetAllUsersCmd makeMsg =
-    Gen.decodeRpc "store_new_user" decodeGetAllUsersCmdResult
+    Gen.decodeRpc "get_all_users" decodeGetAllUsersCmdResult
         |> Decode.map makeMsg
+
 
 decoder : Decoder (Dict String User)
 decoder =
-  Decode.map (Dict.map infoToUser) (Decode.dict infoDecoder)
+    Decode.map (Dict.map infoToUser) (Decode.dict infoDecoder)
+
 
 type alias Info =
-  { url : String
-  , languages : String
-  }
+    { url : String
+    , languages : String
+    }
+
 
 infoDecoder : Decoder Info
 infoDecoder =
-  Decode.map2 Info
-    (Decode.field "url" Decode.string)
-    (Decode.field "languages" Decode.string)
+    Decode.map2 Info
+        (Decode.field "url" Decode.string)
+        (Decode.field "languages" Decode.string)
+
 
 infoToUser : String -> Info -> User
 infoToUser name { url, languages } =
-  User name url languages
+    User name url languages
+
 
 decodeGetAllUsersCmdResult : Decoder GetAllUsersCmdResult
 decodeGetAllUsersCmdResult =
-    Decode.map GetAllUsersCmdResult
-        (Decode.field "users" Decode.string)
+    let
+        userListToDict =
+            List.foldl (\u d -> Dict.insert u.name u d) Dict.empty
+    in
+    Decode.list decodeUser
+        |> Decode.map userListToDict
+
+
+decodeUser : Decoder User
+decodeUser =
+    Decode.map3 User
+        (Decode.field "name" Decode.string)
+        (Decode.field "url" Decode.string)
+        (Decode.field "languages" Decode.string)
+
+
+decodeMe : Decoder (Dict String User)
+decodeMe =
+    let
+        userListToDict =
+            List.foldl (\u d -> Dict.insert u.name u d) Dict.empty
+    in
+    Decode.list decodeUser
+        |> Decode.map userListToDict

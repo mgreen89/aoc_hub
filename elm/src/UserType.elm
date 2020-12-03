@@ -1,6 +1,5 @@
-module UserType exposing
-    ( User
-    )
+module UserType exposing (User)
+
 
 type alias User =
     { name : String
