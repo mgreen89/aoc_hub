@@ -10,11 +10,15 @@ import Bootstrap.Form.InputGroup as InputGroup
 import Bootstrap.Grid as Grid
 import Bootstrap.Grid.Col as Col
 import Bootstrap.Progress as Progress
+import Bootstrap.Table as Table
+import DateTime
 import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
+import Iso8601
 import RemoteData exposing (RemoteData(..))
+import Time
 import Types exposing (..)
 import UserType exposing (User)
 
@@ -26,7 +30,7 @@ view model =
     Grid.container []
         [ Grid.row []
             [ Grid.col colSpec
-                [ h4 [] [ text "Ensoft AoC 2020" ]
+                [ h4 [ style "text-align" "center" ] [ text "Ensoft AoC 2020" ]
                 , button [ onClick FetchGHData ] [ text "Fetch" ]
                 , viewParticipants model.participants model.isUp
                 , br [] []
@@ -47,16 +51,107 @@ maybeCode exitCode =
         div [ class "stderr" ] [ text ("Exit code " ++ String.fromInt exitCode) ]
 
 
-formatUser : User -> Html msg
+formatUser : User -> Table.Row msg
 formatUser user =
-    li [] [ a [ href user.repoUrl ] [ user.name ++ " " ++ user.repoUrl ++ " " ++ user.languages |> text ] ]
+    let
+        lastPushedString : String
+        lastPushedString =
+            case user.lastPushed of
+                Just time ->
+                    formatDate time
+
+                Nothing ->
+                    ""
+    in
+    Table.tr []
+        [ Table.td [] [ text user.name ]
+        , Table.td [] [ a [ href user.repoUrl ] [ text user.repoUrl ] ]
+        , Table.td [] [ text user.languages ]
+        , Table.td [] [ text lastPushedString ]
+        ]
+
+
+formatDate : String -> String
+formatDate iso_time =
+    case Iso8601.toTime iso_time of
+        Ok t ->
+            let
+                whole_date =
+                    DateTime.fromPosix t
+
+                date =
+                    DateTime.getDay whole_date |> String.fromInt
+
+                month =
+                    DateTime.getMonth whole_date |> toEnglishMonth
+
+                time =
+                    DateTime.getTime whole_date
+
+                hours =
+                    DateTime.getHours whole_date |> String.fromInt |> String.padLeft 2 '0'
+
+                minutes =
+                    DateTime.getMinutes whole_date |> String.fromInt |> String.padLeft 2 '0'
+            in
+            date ++ " " ++ month ++ "     " ++ hours ++ ":" ++ minutes
+
+        Err _ ->
+            ""
+
+
+toEnglishMonth : Time.Month -> String
+toEnglishMonth month =
+    case month of
+        Time.Jan ->
+            "Jan"
+
+        Time.Feb ->
+            "Feb"
+
+        Time.Mar ->
+            "Mar"
+
+        Time.Apr ->
+            "Apr"
+
+        Time.May ->
+            "May"
+
+        Time.Jun ->
+            "Jun"
+
+        Time.Jul ->
+            "Jul"
+
+        Time.Aug ->
+            "Aug"
+
+        Time.Sep ->
+            "Sep"
+
+        Time.Oct ->
+            "Oct"
+
+        Time.Nov ->
+            "Nov"
+
+        Time.Dec ->
+            "Dec"
 
 
 viewParticipants : Dict String User -> Bool -> Html Msg
 viewParticipants participants isUp =
-    div []
-        [ ul [] (Dict.values participants |> List.map formatUser)
-        ]
+    Table.simpleTable
+        ( Table.simpleThead
+            [ Table.th [] [ text "Name" ]
+            , Table.th [] [ text "Repository URL" ]
+            , Table.th [] [ text "Languages" ]
+            , Table.th [] [ text "Last push (GitHub only for now 😢)" ]
+            ]
+        , Table.tbody []
+            (Dict.values participants |> List.map formatUser)
+        )
 
 
 {-| View the input area
