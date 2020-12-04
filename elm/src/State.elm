@@ -38,7 +38,7 @@ port errorRecv : Channel.ErrorRecvPort msg
 
 initialModel : Model
 initialModel =
-    { participants = Dict.fromList [ ( "https://github.com/jacksonriley/aoc2020", User "Jackson" "https://github.com/jacksonriley/aoc2020" "Rust" Nothing ) ]
+    { participants = Dict.empty
     , newName = ""
     , newRepoUrl = ""
     , newLanguages = ""

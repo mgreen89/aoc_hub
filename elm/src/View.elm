@@ -30,7 +30,7 @@ view model =
     Grid.container [style "max-width" "1500px"]
         [ Grid.row []
             [ Grid.col colSpec
-                [ h1 [ style "text-align" "center" ] [ text "Ensoft AoC 2020" ]
+                [ h1 [ style "text-align" "center" ] [ a [ href "https://adventofcode.com/2020" ] [text "Ensoft AoC 2020" ]]
                 , button [ onClick FetchGHData ] [ text "Fetch" ]
                 , viewParticipants model.participants model.isUp
                 , br [] []
@@ -199,7 +199,7 @@ viewInput model =
                     [ value model.newLanguages
                     , autofocus True
                     , onInput LanguagesInput
-                    , placeholder "The languages you're using"
+                    , placeholder "The language(s) you're using"
                     ]
                 ]
             )
