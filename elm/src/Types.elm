@@ -46,7 +46,7 @@ type Msg
     | ChannelIsUp Bool
     | Error String
     | FetchGHData
-    | FetchGHResponse (WebData FetchRepoDetails)
+    | FetchGHResponse (WebData (List FetchRepoDetails))
 
 
 type alias GHDetails =
@@ -58,4 +58,5 @@ type alias GHDetails =
 type alias FetchRepoDetails =
     { html_url : String
     , pushed_at : String
+    , message : String
     }

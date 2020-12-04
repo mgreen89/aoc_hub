@@ -57,8 +57,17 @@ formatUser user =
         lastPushedString : String
         lastPushedString =
             case user.lastPushed of
-                Just time ->
-                    formatDate time
+                Just push ->
+                    formatDate push.lastPushedTime
+
+                Nothing ->
+                    ""
+
+        lastMessageString : String
+        lastMessageString =
+            case user.lastPushed of
+                Just push ->
+                    push.lastPushedMessage
 
                 Nothing ->
                     ""
@@ -68,6 +77,7 @@ formatUser user =
         , Table.td [] [ a [ href user.repoUrl ] [ text user.repoUrl ] ]
         , Table.td [] [ text user.languages ]
         , Table.td [] [ text lastPushedString ]
+        , Table.td [] [ text lastMessageString ]
         ]
 
 
@@ -148,6 +158,7 @@ viewParticipants participants isUp =
             , Table.th [] [ text "Repository URL" ]
             , Table.th [] [ text "Languages" ]
             , Table.th [] [ text "Last push (GitHub only for now 😢)" ]
+            , Table.th [] [ text "Last commit msg (GitHub only for now 😢)" ]
             ]
         , Table.tbody []
             (Dict.values participants |> List.map formatUser)

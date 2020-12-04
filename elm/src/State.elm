@@ -9,7 +9,7 @@ import RemoteData exposing (RemoteData(..))
 import Response exposing (pure)
 import Types exposing (..)
 import UserDatabase
-import UserType exposing (User)
+import UserType exposing (..)
 
 
 {-| PORTS
@@ -47,7 +47,7 @@ initialModel =
     , isUp = False
     , errors = []
     , sendPort = appSend
-    , fetchResponse = FetchRepoDetails "" ""
+    , fetchResponse = FetchRepoDetails "" "" ""
     }
 
 
@@ -142,24 +142,29 @@ update msg model =
         FetchGHResponse resp ->
             case resp of
                 -- TODO - add into the User Dict
-                Success info ->
-                    case getParticipantByUrl info.html_url model of
-                        Just u ->
-                            pure
-                                { model
-                                    | fetchResponse = info
-                                    , participants =
-                                        Dict.insert u.name
-                                            (User u.name
-                                                u.repoUrl
-                                                u.languages
-                                                (Just info.pushed_at)
-                                            )
-                                            model.participants
-                                }
+                Success info_list ->
+                    case info_list of
+                        info :: xs ->
+                            case getParticipantByUrl info.html_url model of
+                                Just u ->
+                                    pure
+                                        { model
+                                            | fetchResponse = info
+                                            , participants =
+                                                Dict.insert u.name
+                                                    (User u.name
+                                                        u.repoUrl
+                                                        u.languages
+                                                        (Just (PushInfo info.pushed_at info.message))
+                                                    )
+                                                    model.participants
+                                        }
 
-                        --     ,participants =
-                        Nothing ->
+                                --     ,participants =
+                                Nothing ->
+                                    pure model
+
+                        _ ->
                             pure model
 
                 _ ->
@@ -168,7 +173,7 @@ update msg model =
 
 getParticipantByUrl : String -> Model -> Maybe User
 getParticipantByUrl url model =
-    case Dict.values model.participants |> List.filter (\u -> u.repoUrl == url) of
+    case Dict.values model.participants |> List.filter (\u -> String.contains u.repoUrl url) of
         u :: xs ->
             Just u
 
@@ -199,15 +204,21 @@ getGHDetails user =
 fetchCmd : GHDetails -> Cmd Msg
 fetchCmd details =
     Http.get
-        { url = "https://api.github.com/repos/" ++ details.username ++ "/" ++ details.reponame
+        { url = "https://api.github.com/repos/" ++ details.username ++ "/" ++ details.reponame ++ "/commits"
         , expect =
             Http.expectJson (RemoteData.fromResult >> FetchGHResponse)
                 fetchDecoder
         }
 
 
-fetchDecoder : Decoder FetchRepoDetails
+fetchDecoder : Decoder (List FetchRepoDetails)
 fetchDecoder =
-    Decode.map2 FetchRepoDetails
+    Decode.list fetchDecoderItem
+
+
+fetchDecoderItem : Decoder FetchRepoDetails
+fetchDecoderItem =
+    Decode.map3 FetchRepoDetails
         (Decode.field "html_url" Decode.string)
-        (Decode.field "pushed_at" Decode.string)
+        (Decode.at [ "commit", "author", "date" ] Decode.string)
+        (Decode.at [ "commit", "message" ] Decode.string)
