@@ -90,7 +90,7 @@ decodeGetAllUsersCmdResult : Decoder GetAllUsersCmdResult
 decodeGetAllUsersCmdResult =
     let
         userListToDict =
-            List.foldl (\u d -> Dict.insert u.name u d) Dict.empty
+            List.foldl (\u d -> Dict.insert u.repoUrl u d) Dict.empty
     in
     Decode.list decodeUser
         |> Decode.map userListToDict

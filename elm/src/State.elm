@@ -38,7 +38,7 @@ port errorRecv : Channel.ErrorRecvPort msg
 
 initialModel : Model
 initialModel =
-    { participants = Dict.fromList [ ( "Jackson", User "Jackson" "https://github.com/jacksonriley/aoc2020" "Rust" Nothing ) ]
+    { participants = Dict.fromList [ ( "https://github.com/jacksonriley/aoc2020", User "Jackson" "https://github.com/jacksonriley/aoc2020" "Rust" Nothing ) ]
     , newName = ""
     , newRepoUrl = ""
     , newLanguages = ""
@@ -88,7 +88,7 @@ update msg model =
                 |> Channel.sendRpc
                     { model
                         | participants =
-                            Dict.insert model.newName
+                            Dict.insert model.newRepoUrl
                                 (User model.newName
                                     model.newRepoUrl
                                     model.newLanguages
@@ -151,7 +151,7 @@ update msg model =
                                         { model
                                             | fetchResponse = info
                                             , participants =
-                                                Dict.insert u.name
+                                                Dict.insert u.repoUrl
                                                     (User u.name
                                                         u.repoUrl
                                                         u.languages
@@ -160,7 +160,6 @@ update msg model =
                                                     model.participants
                                         }
 
-                                --     ,participants =
                                 Nothing ->
                                     pure model
 
