@@ -27,13 +27,14 @@ import UserType exposing (User)
 -}
 view : Model -> Html Msg
 view model =
-    Grid.container []
+    Grid.container [style "max-width" "1500px"]
         [ Grid.row []
             [ Grid.col colSpec
-                [ h4 [ style "text-align" "center" ] [ text "Ensoft AoC 2020" ]
+                [ h1 [ style "text-align" "center" ] [ text "Ensoft AoC 2020" ]
                 , button [ onClick FetchGHData ] [ text "Fetch" ]
                 , viewParticipants model.participants model.isUp
                 , br [] []
+                , h3 [ ] [ text "Add yourself!" ]
                 , viewInput model
                 ]
             ]
@@ -157,8 +158,8 @@ viewParticipants participants isUp =
             [ Table.th [] [ text "Name" ]
             , Table.th [] [ text "Repository URL" ]
             , Table.th [] [ text "Languages" ]
-            , Table.th [] [ text "Last push (GitHub only for now 😢)" ]
-            , Table.th [] [ text "Last commit msg (GitHub only for now 😢)" ]
+            , Table.th [] [ text "Last push (GitHub only for now)" ]
+            , Table.th [] [ text "Last commit msg (GitHub only for now)" ]
             ]
         , Table.tbody []
             (Dict.values participants |> List.map formatUser)
