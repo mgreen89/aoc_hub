@@ -3,7 +3,8 @@ port module State exposing (initialModel, subscriptions, update)
 import Dict exposing (Dict)
 import EnTrance.Channel as Channel
 import EnTrance.Request exposing (new)
-import Json.Decode exposing (Decoder)
+import Http
+import Json.Decode as Decode exposing (Decoder)
 import RemoteData exposing (RemoteData(..))
 import Response exposing (pure)
 import Types exposing (..)
@@ -37,7 +38,7 @@ port errorRecv : Channel.ErrorRecvPort msg
 
 initialModel : Model
 initialModel =
-    { participants = Dict.fromList [ ( "Jackson", User "Jackson" "https://github.com/jacksonriley/aoc2020" "Rust" ) ]
+    { participants = Dict.fromList [ ( "Jackson", User "Jackson" "https://github.com/jacksonriley/aoc2020" "Rust" Nothing ) ]
     , newName = ""
     , newRepoUrl = ""
     , newLanguages = ""
@@ -46,6 +47,7 @@ initialModel =
     , isUp = False
     , errors = []
     , sendPort = appSend
+    , fetchResponse = FetchRepoDetails "" ""
     }
 
 
@@ -90,6 +92,7 @@ update msg model =
                                 (User model.newName
                                     model.newRepoUrl
                                     model.newLanguages
+                                    Nothing
                                 )
                                 model.participants
                         , newName = ""
@@ -132,3 +135,64 @@ update msg model =
 
         Error error ->
             pure { model | errors = error :: model.errors }
+
+        FetchGHData ->
+            ( model, Dict.values model.participants |> List.filterMap getGHDetails |> List.map fetchCmd |> Cmd.batch )
+
+        FetchGHResponse resp ->
+            case resp of
+                -- TODO - add into the User Dict
+                Success info ->
+                    case getParticipantByUrl info.html_url model of
+                        Just u -> pure { model | fetchResponse = info
+                                        ,participants=
+                                            Dict.insert u.name
+                                                (User u.name
+                                                    u.repoUrl
+                                                    u.languages
+                                                    (Just info.pushed_at)
+                                                )
+                                            model.participants
+                                        }
+                            --     ,participants =
+                        Nothing -> pure model
+
+                _ ->
+                    pure model
+
+getParticipantByUrl:  String -> Model -> Maybe User
+getParticipantByUrl url model =
+    case Dict.values model.participants |> List.filter (\u -> u.repoUrl == url) of
+        u::xs -> Just u
+        [] -> Nothing
+
+isUsingGitHub : User -> Bool
+isUsingGitHub user =
+    String.contains "github.com" user.repoUrl
+
+
+getGHDetails : User -> Maybe GHDetails
+getGHDetails user =
+    if isUsingGitHub user then
+    -- repoUrl e.g. https://github.com/jacksonriley/aoc2020
+    case String.split "/" user.repoUrl |> List.reverse of
+        repo::name::xs -> Just (GHDetails name repo)
+        _ -> Nothing
+    else Nothing
+
+
+fetchCmd : GHDetails -> Cmd Msg
+fetchCmd details =
+    Http.get
+        { url = "https://api.github.com/repos/" ++ details.username ++ "/" ++ details.reponame
+        , expect =
+            Http.expectJson (RemoteData.fromResult >> FetchGHResponse)
+                fetchDecoder
+        }
+
+
+fetchDecoder : Decoder FetchRepoDetails
+fetchDecoder =
+    Decode.map2 FetchRepoDetails
+        (Decode.field "html_url" Decode.string)
+        (Decode.field "pushed_at" Decode.string)

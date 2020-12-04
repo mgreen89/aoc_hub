@@ -100,7 +100,8 @@ decodeGetAllUsersCmdResult =
 -}
 decodeUser : Decoder User
 decodeUser =
-    Decode.map3 User
+    Decode.map4 User
         (Decode.field "name" Decode.string)
         (Decode.field "url" Decode.string)
         (Decode.field "languages" Decode.string)
+        (Decode.succeed Nothing)

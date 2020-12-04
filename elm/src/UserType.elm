@@ -5,4 +5,5 @@ type alias User =
     { name : String
     , repoUrl : String
     , languages : String
+    , lastPushed : Maybe String
     }
