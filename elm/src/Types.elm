@@ -1,8 +1,8 @@
 module Types exposing
-    ( Model
-    , Msg(..)
+    ( FetchRepoDetails
     , GHDetails
-    , FetchRepoDetails
+    , Model
+    , Msg(..)
     )
 
 import Dict exposing (Dict)
@@ -48,12 +48,14 @@ type Msg
     | FetchGHData
     | FetchGHResponse (WebData FetchRepoDetails)
 
+
 type alias GHDetails =
     { username : String
     , reponame : String
     }
 
-type alias FetchRepoDetails = {
-    html_url : String
+
+type alias FetchRepoDetails =
+    { html_url : String
     , pushed_at : String
     }

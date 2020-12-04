@@ -144,27 +144,37 @@ update msg model =
                 -- TODO - add into the User Dict
                 Success info ->
                     case getParticipantByUrl info.html_url model of
-                        Just u -> pure { model | fetchResponse = info
-                                        ,participants=
-                                            Dict.insert u.name
-                                                (User u.name
-                                                    u.repoUrl
-                                                    u.languages
-                                                    (Just info.pushed_at)
-                                                )
+                        Just u ->
+                            pure
+                                { model
+                                    | fetchResponse = info
+                                    , participants =
+                                        Dict.insert u.name
+                                            (User u.name
+                                                u.repoUrl
+                                                u.languages
+                                                (Just info.pushed_at)
+                                            )
                                             model.participants
-                                        }
-                            --     ,participants =
-                        Nothing -> pure model
+                                }
+
+                        --     ,participants =
+                        Nothing ->
+                            pure model
 
                 _ ->
                     pure model
 
-getParticipantByUrl:  String -> Model -> Maybe User
+
+getParticipantByUrl : String -> Model -> Maybe User
 getParticipantByUrl url model =
     case Dict.values model.participants |> List.filter (\u -> u.repoUrl == url) of
-        u::xs -> Just u
-        [] -> Nothing
+        u :: xs ->
+            Just u
+
+        [] ->
+            Nothing
+
 
 isUsingGitHub : User -> Bool
 isUsingGitHub user =
@@ -174,11 +184,16 @@ isUsingGitHub user =
 getGHDetails : User -> Maybe GHDetails
 getGHDetails user =
     if isUsingGitHub user then
-    -- repoUrl e.g. https://github.com/jacksonriley/aoc2020
-    case String.split "/" user.repoUrl |> List.reverse of
-        repo::name::xs -> Just (GHDetails name repo)
-        _ -> Nothing
-    else Nothing
+        -- repoUrl e.g. https://github.com/jacksonriley/aoc2020
+        case String.split "/" user.repoUrl |> List.reverse of
+            repo :: name :: xs ->
+                Just (GHDetails name repo)
+
+            _ ->
+                Nothing
+
+    else
+        Nothing
 
 
 fetchCmd : GHDetails -> Cmd Msg

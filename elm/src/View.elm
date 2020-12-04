@@ -27,7 +27,7 @@ view model =
         [ Grid.row []
             [ Grid.col colSpec
                 [ h4 [] [ text "Ensoft AoC 2020" ]
-                , button [onClick FetchGHData] [text "Fetch"]
+                , button [ onClick FetchGHData ] [ text "Fetch" ]
                 , viewParticipants model.participants model.isUp
                 , br [] []
                 , viewInput model
