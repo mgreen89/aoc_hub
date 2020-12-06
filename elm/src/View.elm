@@ -27,14 +27,14 @@ import UserType exposing (User)
 -}
 view : Model -> Html Msg
 view model =
-    Grid.container [style "max-width" "1500px"]
+    Grid.container [ style "max-width" "1500px" ]
         [ Grid.row []
             [ Grid.col colSpec
-                [ h1 [ style "text-align" "center" ] [ a [ href "https://adventofcode.com/2020" ] [text "Ensoft AoC 2020" ]]
-                , button [ onClick FetchGHData ] [ text "Fetch" ]
-                , viewParticipants model.participants model.isUp
+                [ h1 [ style "text-align" "center" ] [ a [ href "https://adventofcode.com/2020" ] [ text "Ensoft AoC 2020" ] ]
+                , viewParticipants model.participants
                 , br [] []
-                , h3 [ ] [ text "Add yourself!" ]
+                , div [style "text-align" "center"] [Button.button [ Button.outlinePrimary, Button.attrs [onClick FetchGHData] ] [ text "Update GitHub info" ]]
+                , h3 [] [ text "Add yourself!" ]
                 , viewInput model
                 ]
             ]
@@ -96,9 +96,6 @@ formatDate iso_time =
                 month =
                     DateTime.getMonth whole_date |> toEnglishMonth
 
-                time =
-                    DateTime.getTime whole_date
-
                 hours =
                     DateTime.getHours whole_date |> String.fromInt |> String.padLeft 2 '0'
 
@@ -151,8 +148,8 @@ toEnglishMonth month =
             "Dec"
 
 
-viewParticipants : Dict String User -> Bool -> Html Msg
-viewParticipants participants isUp =
+viewParticipants : Dict String User -> Html Msg
+viewParticipants participants =
     Table.simpleTable
         ( Table.simpleThead
             [ Table.th [] [ text "Name" ]
@@ -162,7 +159,7 @@ viewParticipants participants isUp =
             , Table.th [] [ text "Last commit msg (GitHub only for now)" ]
             ]
         , Table.tbody []
-            (Dict.values participants |> List.map formatUser)
+            (Dict.values participants |> List.sortBy .name |> List.map formatUser)
         )
 
 
