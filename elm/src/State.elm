@@ -106,7 +106,7 @@ update msg model =
             pure model
 
         GotStoreResult result ->
-            ({ model | storeResult = result }, createFetchGHCmd model.participants)
+            ( { model | storeResult = result }, createFetchGHCmd model.participants )
 
         GotGetResult result ->
             case result of
@@ -139,7 +139,7 @@ update msg model =
             pure { model | errors = error :: model.errors }
 
         FetchGHData ->
-            ( model, createFetchGHCmd model.participants)
+            ( model, createFetchGHCmd model.participants )
 
         FetchGHResponse resp ->
             case resp of
@@ -171,13 +171,17 @@ update msg model =
                 _ ->
                     pure model
 
+
 {-|
+
     Construct a batch of fetchCmd to retrieve GitHub info for all of the
     participants.
+
 -}
-createFetchGHCmd : (Dict String User) -> Cmd Msg
+createFetchGHCmd : Dict String User -> Cmd Msg
 createFetchGHCmd participants =
     Dict.values participants |> List.filterMap getGHDetails |> List.map fetchCmd |> Cmd.batch
+
 
 getParticipantByUrl : String -> Model -> Maybe User
 getParticipantByUrl url model =

@@ -33,7 +33,7 @@ view model =
                 [ h1 [ style "text-align" "center" ] [ a [ href "https://adventofcode.com/2020" ] [ text "Ensoft AoC 2020" ] ]
                 , viewParticipants model.participants
                 , br [] []
-                , div [style "text-align" "center"] [Button.button [ Button.outlinePrimary, Button.attrs [onClick FetchGHData] ] [ text "Update GitHub info" ]]
+                , div [ style "text-align" "center" ] [ Button.button [ Button.outlinePrimary, Button.attrs [ onClick FetchGHData ] ] [ text "Update GitHub info" ] ]
                 , h3 [] [ text "Add yourself!" ]
                 , viewInput model
                 ]

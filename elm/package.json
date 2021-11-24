@@ -9,6 +9,7 @@
     "parcel-bundler": "^1.12.3"
   },
   "devDependencies": {
+    "@parcel/transformer-sass": "^2.0.1",
     "cssnano": "^4.1.10",
     "elm": "^0.19.1-1",
     "elm-analyse": "^0.16.4",
