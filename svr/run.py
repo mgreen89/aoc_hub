@@ -34,11 +34,11 @@ class UserDatabaseFeature(ConfiguredFeature):
     # Message schema: accept:
     #   store_new_user: args - name, url, languages
     #   get_all_users: no args
-    requests = {"store_new_user": ["name", "url", "languages"],
+    requests = {"store_new_user": ["name", "url", "languages", "year"],
                 "get_all_users": []}
 
-    async def do_store_new_user(self, name, url, languages):
-        log.info("Received store_new_user request[{}, {}, {}]".format(name, url, languages))
+    async def do_store_new_user(self, name, url, languages, year):
+        log.info("Received store_new_user request[{}, {}, {}, {}]".format(name, url, languages, year))
 
         if not os.path.exists('users.json'):
             # Create an empty file
@@ -51,9 +51,9 @@ class UserDatabaseFeature(ConfiguredFeature):
             except json.decoder.JSONDecodeError:
                 users = []
 
-        users.append({"name": name, "url": url, "languages": languages})
+        users.append({"name": name, "url": url, "languages": languages, "year": year})
         with open("users.json", "w") as f:
-            json.dump(users, f)
+            json.dump(users, f, indent=2)
 
         return self._rpc_success(
             dict(exit_code=0)

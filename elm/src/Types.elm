@@ -5,6 +5,7 @@ module Types exposing
     , Msg(..)
     )
 
+import Bootstrap.Tab as Tab
 import Dict exposing (Dict)
 import EnTrance.Channel as Channel
 import EnTrance.Types exposing (RpcData)
@@ -28,6 +29,7 @@ type alias Model =
     , errors : List String
     , sendPort : Channel.SendPort Msg
     , fetchResponse : FetchRepoDetails
+    , tabState : Tab.State
     }
 
 
@@ -37,7 +39,7 @@ type alias Model =
 
 type Msg
     = NameInput String
-    | RunStoreCmd
+    | RunStoreCmd String
     | RunGetCmd
     | RepoUrlInput String
     | LanguagesInput String
@@ -47,6 +49,7 @@ type Msg
     | Error String
     | FetchGHData
     | FetchGHResponse (WebData (List FetchRepoDetails))
+    | TabMsg Tab.State
 
 
 type alias GHDetails =

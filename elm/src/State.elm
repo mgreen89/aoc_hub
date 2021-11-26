@@ -1,8 +1,8 @@
 port module State exposing (initialModel, subscriptions, update)
 
+import Bootstrap.Tab as Tab
 import Dict exposing (Dict)
 import EnTrance.Channel as Channel
-import EnTrance.Request exposing (new)
 import Http
 import Json.Decode as Decode exposing (Decoder)
 import RemoteData exposing (RemoteData(..))
@@ -48,6 +48,7 @@ initialModel =
     , errors = []
     , sendPort = appSend
     , fetchResponse = FetchRepoDetails "" "" ""
+    , tabState = Tab.customInitialState "2021"
     }
 
 
@@ -83,8 +84,8 @@ update msg model =
         LanguagesInput newLanguages ->
             pure { model | newLanguages = newLanguages }
 
-        RunStoreCmd ->
-            UserDatabase.storeNewUserCmd model.newName model.newRepoUrl model.newLanguages
+        RunStoreCmd year ->
+            UserDatabase.storeNewUserCmd model.newName model.newRepoUrl model.newLanguages year
                 |> Channel.sendRpc
                     { model
                         | participants =
@@ -92,6 +93,7 @@ update msg model =
                                 (User model.newName
                                     model.newRepoUrl
                                     model.newLanguages
+                                    year
                                     Nothing
                                 )
                                 model.participants
@@ -123,17 +125,16 @@ update msg model =
                     pure { model | getResult = result }
 
         ChannelIsUp isUp ->
-            case isUp of
-                True ->
-                    UserDatabase.getAllUsersCmd
-                        |> Channel.sendRpc
-                            { model
-                                | getResult = Loading
-                                , isUp = isUp
-                            }
+            if isUp then
+                UserDatabase.getAllUsersCmd
+                    |> Channel.sendRpc
+                        { model
+                            | getResult = Loading
+                            , isUp = isUp
+                        }
 
-                False ->
-                    pure { model | isUp = isUp }
+            else
+                pure { model | isUp = isUp }
 
         Error error ->
             pure { model | errors = error :: model.errors }
@@ -146,7 +147,7 @@ update msg model =
                 -- TODO - add into the User Dict
                 Success info_list ->
                     case info_list of
-                        info :: xs ->
+                        info :: _ ->
                             case getParticipantByUrl info.html_url model of
                                 Just u ->
                                     pure
@@ -157,6 +158,7 @@ update msg model =
                                                     (User u.name
                                                         u.repoUrl
                                                         u.languages
+                                                        u.year
                                                         (Just (PushInfo info.pushed_at info.message))
                                                     )
                                                     model.participants
@@ -170,6 +172,9 @@ update msg model =
 
                 _ ->
                     pure model
+
+        TabMsg state ->
+            pure { model | tabState = state }
 
 
 {-|
@@ -186,7 +191,7 @@ createFetchGHCmd participants =
 getParticipantByUrl : String -> Model -> Maybe User
 getParticipantByUrl url model =
     case Dict.values model.participants |> List.filter (\u -> String.contains u.repoUrl url) of
-        u :: xs ->
+        u :: _ ->
             Just u
 
         [] ->
@@ -203,7 +208,7 @@ getGHDetails user =
     if isUsingGitHub user then
         -- repoUrl e.g. https://github.com/jacksonriley/aoc2020
         case String.split "/" user.repoUrl |> List.reverse of
-            repo :: name :: xs ->
+            repo :: name :: _ ->
                 Just (GHDetails name repo)
 
             _ ->

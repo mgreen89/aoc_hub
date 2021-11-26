@@ -3,13 +3,12 @@ module View exposing (view)
 {-| View
 -}
 
-import Bootstrap.Alert as Alert
 import Bootstrap.Button as Button
 import Bootstrap.Form.Input as Input
 import Bootstrap.Form.InputGroup as InputGroup
 import Bootstrap.Grid as Grid
 import Bootstrap.Grid.Col as Col
-import Bootstrap.Progress as Progress
+import Bootstrap.Tab as Tab
 import Bootstrap.Table as Table
 import DateTime
 import Dict exposing (Dict)
@@ -27,29 +26,36 @@ import UserType exposing (User)
 -}
 view : Model -> Html Msg
 view model =
+    Tab.config TabMsg
+        |> Tab.items
+            [ Tab.item
+                { id = "2020"
+                , link = Tab.link [] [ text "2020" ]
+                , pane = Tab.pane [] [ viewYear "2020" model ]
+                }
+            , Tab.item
+                { id = "2021"
+                , link = Tab.link [] [ text "2021" ]
+                , pane = Tab.pane [] [ viewYear "2021" model ]
+                }
+            ]
+        |> Tab.view model.tabState
+
+
+viewYear : String -> Model -> Html Msg
+viewYear year model =
     Grid.container [ style "max-width" "1500px" ]
         [ Grid.row []
             [ Grid.col colSpec
-                [ h1 [ style "text-align" "center" ] [ a [ href "https://adventofcode.com/2020" ] [ text "Ensoft AoC 2020" ] ]
-                , viewParticipants model.participants
+                [ h1 [ style "text-align" "center" ] [ a [ href ("https://adventofcode.com/" ++ year) ] [ text ("Ensoft AoC " ++ year) ] ]
+                , viewParticipants year model.participants
                 , br [] []
                 , div [ style "text-align" "center" ] [ Button.button [ Button.outlinePrimary, Button.attrs [ onClick FetchGHData ] ] [ text "Update GitHub info" ] ]
                 , h3 [] [ text "Add yourself!" ]
-                , viewInput model
+                , viewInput year model
                 ]
             ]
         ]
-
-
-{-| Only display exit code if non-zero
--}
-maybeCode : Int -> Html msg
-maybeCode exitCode =
-    if exitCode == 0 then
-        text ""
-
-    else
-        div [ class "stderr" ] [ text ("Exit code " ++ String.fromInt exitCode) ]
 
 
 formatUser : User -> Table.Row msg
@@ -148,8 +154,8 @@ toEnglishMonth month =
             "Dec"
 
 
-viewParticipants : Dict String User -> Html Msg
-viewParticipants participants =
+viewParticipants : String -> Dict String User -> Html Msg
+viewParticipants year participants =
     Table.simpleTable
         ( Table.simpleThead
             [ Table.th [] [ text "Name" ]
@@ -159,14 +165,14 @@ viewParticipants participants =
             , Table.th [] [ text "Last commit msg (GitHub only for now)" ]
             ]
         , Table.tbody []
-            (Dict.values participants |> List.sortBy .name |> List.map formatUser)
+            (Dict.values participants |> List.sortBy .name |> List.filter (\p -> p.year == year) |> List.map formatUser)
         )
 
 
 {-| View the input area
 -}
-viewInput : Model -> Html Msg
-viewInput model =
+viewInput : String -> Model -> Html Msg
+viewInput year model =
     div []
         [ InputGroup.config
             (InputGroup.text
@@ -203,7 +209,7 @@ viewInput model =
             |> InputGroup.successors
                 [ InputGroup.button
                     [ Button.outlineInfo
-                    , Button.attrs [ onClick RunStoreCmd ]
+                    , Button.attrs [ onClick (RunStoreCmd year) ]
                     , Button.disabled (not model.isUp)
                     ]
                     [ text "Go!" ]

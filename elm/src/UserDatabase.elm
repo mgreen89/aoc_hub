@@ -37,12 +37,13 @@ type alias StoreNewUserCmdResult =
 
 {-| Request to do a command.
 -}
-storeNewUserCmd : String -> String -> String -> Request
-storeNewUserCmd name url languages =
+storeNewUserCmd : String -> String -> String -> String -> Request
+storeNewUserCmd name url languages year =
     Request.new "store_new_user"
         |> Request.addString "name" name
         |> Request.addString "url" url
         |> Request.addString "languages" languages
+        |> Request.addString "year" year
 
 
 {-| Decode notifications from the server. Takes a message constructor.
@@ -100,8 +101,9 @@ decodeGetAllUsersCmdResult =
 -}
 decodeUser : Decoder User
 decodeUser =
-    Decode.map4 User
+    Decode.map5 User
         (Decode.field "name" Decode.string)
         (Decode.field "url" Decode.string)
         (Decode.field "languages" Decode.string)
+        (Decode.field "year" Decode.string)
         (Decode.succeed Nothing)
