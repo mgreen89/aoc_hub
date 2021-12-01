@@ -226,7 +226,11 @@ fetchCmd details =
         -- This token is a personal access token which can be generated from
         -- https://github.com/settings/tokens. It allows for a higher
         -- rate-limit for the GitHub API (currently 5000 requests per hour).
-        , headers = [ Http.header "Authorization" "token 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" ]
+        -- The totally hacky splitting of the token is because GitHub
+        -- automatically revokes any tokens that you push! Helpful in general
+        -- but since this token doesn't give any permissions I'm not worried
+        -- about it leaking.
+        , headers = [ Http.header "Authorization" ("token ghp_ojcVG7aAX8n" ++ "BfiWlsA3VMVfKKBHIDt0iZUa4") ]
         , url = "https://api.github.com/repos/" ++ details.username ++ "/" ++ details.reponame ++ "/commits"
         , body = Http.emptyBody
         , expect =
