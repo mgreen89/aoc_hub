@@ -226,7 +226,7 @@ fetchCmd details =
         -- This token is a personal access token which can be generated from
         -- https://github.com/settings/tokens. It allows for a higher
         -- rate-limit for the GitHub API (currently 5000 requests per hour).
-        , headers = [ Http.header "Authorization" "token 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" ]
+        , headers = [ Http.header "Authorization" "token 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" ]
         , url = "https://api.github.com/repos/" ++ details.username ++ "/" ++ details.reponame ++ "/commits"
         , body = Http.emptyBody
         , expect =
