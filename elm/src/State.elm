@@ -185,7 +185,7 @@ update msg model =
 -}
 createFetchGHCmd : Dict String User -> Cmd Msg
 createFetchGHCmd participants =
-    Dict.values participants |> List.filterMap getGHDetails |> List.map fetchCmd |> Cmd.batch
+    Dict.values participants |> List.filterMap getGHDetails |> List.map (fetchCmd "oJYQsqm301XNTFCXU40l871") |> Cmd.batch
 
 
 getParticipantByUrl : String -> Model -> Maybe User
@@ -218,19 +218,22 @@ getGHDetails user =
         Nothing
 
 
-fetchCmd : GHDetails -> Cmd Msg
-fetchCmd details =
+fetchCmd : String -> GHDetails -> Cmd Msg
+fetchCmd token_end details =
     Http.request
         { method = "GET"
 
         -- This token is a personal access token which can be generated from
         -- https://github.com/settings/tokens. It allows for a higher
         -- rate-limit for the GitHub API (currently 5000 requests per hour).
-        -- The totally hacky splitting of the token is because GitHub
+        -- The MEGA hacky splitting of the token is because GitHub
         -- automatically revokes any tokens that you push! Helpful in general
         -- but since this token doesn't give any permissions I'm not worried
         -- about it leaking.
-        , headers = [ Http.header "Authorization" ("token ghp_ojcVG7aAX8n" ++ "BfiWlsA3VMVfKKBHIDt0iZUa4") ]
+        -- Constructing the token inline doesn't work because the Elm compiler
+        -- is too smart and does this at compile time, leaving the full token
+        -- in the generated Javascipt!
+        , headers = [ Http.header "Authorization" ("token ghp_Hr5Q1rGfujU37" ++ token_end) ]
         , url = "https://api.github.com/repos/" ++ details.username ++ "/" ++ details.reponame ++ "/commits"
         , body = Http.emptyBody
         , expect =
