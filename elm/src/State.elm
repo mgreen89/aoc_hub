@@ -220,11 +220,20 @@ getGHDetails user =
 
 fetchCmd : GHDetails -> Cmd Msg
 fetchCmd details =
-    Http.get
-        { url = "https://api.github.com/repos/" ++ details.username ++ "/" ++ details.reponame ++ "/commits"
+    Http.request
+        { method = "GET"
+
+        -- This token is a personal access token which can be generated from
+        -- https://github.com/settings/tokens. It allows for a higher
+        -- rate-limit for the GitHub API (currently 5000 requests per hour).
+        , headers = [ Http.header "Authorization" "token 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" ]
+        , url = "https://api.github.com/repos/" ++ details.username ++ "/" ++ details.reponame ++ "/commits"
+        , body = Http.emptyBody
         , expect =
             Http.expectJson (RemoteData.fromResult >> FetchGHResponse)
                 fetchDecoder
+        , timeout = Nothing
+        , tracker = Nothing
         }
 
 
