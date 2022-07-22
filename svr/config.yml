@@ -6,8 +6,8 @@
 # How to start the app
 #
 start:
-  host: 0.0.0.0
-  port: 8000
+  host: 127.0.0.1
+  port: 1357
   static_dir: static
 
 #

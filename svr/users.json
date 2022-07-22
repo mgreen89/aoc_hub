@@ -1,0 +1,140 @@
+[
+  {
+    "name": "Callum",
+    "url": "https://github.com/callumquick/aoc2020",
+    "languages": "Rust",
+    "year": "2020"
+  },
+  {
+    "name": "Alex",
+    "url": "https://github.com/alclarks/advent-of-code-2020",
+    "languages": "C",
+    "year": "2020"
+  },
+  {
+    "name": "Jackson",
+    "url": "https://github.com/jacksonriley/aoc2020",
+    "languages": "Rust",
+    "year": "2020"
+  },
+  {
+    "name": "Matt",
+    "url": "https://repl.it/@MatthewGreen5/AoC-2020-rust",
+    "languages": "Rust",
+    "year": "2020"
+  },
+  {
+    "name": "Martin",
+    "url": "https://github.com/martinhenstridge/adventofcode2020",
+    "languages": "Python",
+    "year": "2020"
+  },
+  {
+    "name": "Rob",
+    "url": "https://github.com/rgwilton/advent-of-code-2020",
+    "languages": "Scala",
+    "year": "2020"
+  },
+  {
+    "name": "Matt",
+    "url": "https://github.com/mgreen89/aoc2020-haskell",
+    "languages": "Haskell",
+    "year": "2020"
+  },
+  {
+    "name": "Debbie",
+    "url": "https://github.com/debbiemartin/AOC20",
+    "languages": "C++, Python",
+    "year": "2020"
+  },
+  {
+    "name": "Rich",
+    "url": "https://repl.it/@richcooper/AOC2020",
+    "languages": "Python",
+    "year": "2020"
+  },
+  {
+    "name": "Ben",
+    "url": "https://github.com/benedwards14/Advent-of-Code-2020",
+    "languages": "Python",
+    "year": "2020"
+  },
+  {
+    "name": "Nick",
+    "url": "https://github.com/nljelfs/advent-of-code-2020",
+    "languages": "Python",
+    "year": "2020"
+  },
+  {
+    "name": "Lewis",
+    "url": "https://github.com/LewisGaul/zig-aoc-2021",
+    "languages": "Zig",
+    "year": "2021"
+  },
+  {
+    "name": "Callum",
+    "url": "https://github.com/callumquick/aoc2021",
+    "languages": "Rust",
+    "year": "2021"
+  },
+  {
+    "name": "Rob Wilton",
+    "url": "https://github.com/rgwilton/AoC-2021",
+    "languages": "Scala 3",
+    "year": "2021"
+  },
+  {
+    "name": "Olli",
+    "url": "https://github.com/ollij93/aoc2021",
+    "languages": "Rust",
+    "year": "2021"
+  },
+  {
+    "name": "Matt G",
+    "url": "https://github.com/mgreen89/aoc2021-haskell",
+    "languages": "Haskell",
+    "year": "2021"
+  },
+  {
+    "name": "Jackson",
+    "url": "https://github.com/jacksonriley/aoc2021",
+    "languages": "Haskell",
+    "year": "2021"
+  },
+  {
+    "name": "Jon N",
+    "url": "https://github.com/nights99/aoc2021",
+    "languages": "Swift",
+    "year": "2021"
+  },
+  {
+    "name": "Tempy",
+    "url": "https://github.com/tharisatac/aoc2021",
+    "languages": "Python",
+    "year": "2021"
+  },
+  {
+    "name": "Phil C",
+    "url": "https://github.com/phmc/aoc21",
+    "languages": "Python",
+    "year": "2021"
+  },
+  {
+    "name": "Alex C",
+    "url": "https://github.com/alclarks/aoc2021",
+    "languages": "Rust",
+    "year": "2021"
+  },
+  {
+    "name": "Chris D",
+    "url": "https://github.com/chuckds/aoc2021",
+    "languages": "Python",
+    "year": "2021"
+  },
+  {
+    "name": "Tom P",
+    "url": "https://github.com/tplews98/advent_of_code_2021",
+    "languages": "C",
+    "year": "2021"
+  }
+]
