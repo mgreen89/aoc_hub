@@ -38,6 +38,21 @@ view model =
                 , link = Tab.link [] [ text "2021" ]
                 , pane = Tab.pane [] [ viewYear "2021" model ]
                 }
+            , Tab.item
+                { id = "2022"
+                , link = Tab.link [] [ text "2022" ]
+                , pane = Tab.pane [] [ viewYear "2022" model ]
+                }
+            , Tab.item
+                { id = "2023"
+                , link = Tab.link [] [ text "2023" ]
+                , pane = Tab.pane [] [ viewYear "2023" model ]
+                }
+            , Tab.item
+                { id = "2024"
+                , link = Tab.link [] [ text "2024" ]
+                , pane = Tab.pane [] [ viewYear "2024" model ]
+                }
             ]
         |> Tab.view model.tabState
 
@@ -48,6 +63,7 @@ viewYear year model =
         [ Grid.row []
             [ Grid.col colSpec
                 [ h1 [ style "text-align" "center" ] [ a [ href ("https://adventofcode.com/" ++ year) ] [ text ("Ensoft AoC " ++ year) ] ]
+                , h4 [ style "text-align" "center" ] (if year == "2023" || year == "2024" then [ text "Private Leaderboard Code: 861630-cfbd3281" ] else [])
                 , viewParticipants year model.participants
                 , br [] []
                 , div [ style "text-align" "center" ] [ Button.button [ Button.outlinePrimary, Button.attrs [ onClick FetchGHData ] ] [ text "Update GitHub info" ] ]

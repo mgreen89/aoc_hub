@@ -136,5 +136,89 @@
     "url": "https://github.com/tplews98/advent_of_code_2021",
     "languages": "C",
     "year": "2021"
+  },
+  {
+    "name": "Matt G",
+    "url": "https://github.com/mgreen89/aoc2022-haskell",
+    "languages": "Haskell",
+    "year": "2022"
+  },
+  {
+    "name": "Rob Wilton",
+    "url": "https://github.com/rgwilton/AoC-2022",
+    "languages": "Scala 3",
+    "year": "2022"
+  },
+  {
+    "name": "ChuckD",
+    "url": "https://github.com/chuckds/aoc2022",
+    "languages": "Python, Rust",
+    "year": "2022"
+  },
+  {
+    "name": "Sam B",
+    "url": "https://github.com/samboyer/adventofcode",
+    "languages": "Python (code golf)",
+    "year": "2022"
+  },
+  {
+    "name": "Olli",
+    "url": "https://github.com/ollij93/aoc2022",
+    "languages": "Haskell",
+    "year": "2022"
+  },
+  {
+    "name": "Tom D",
+    "url": "https://github.com/78thomasd/aoc2022",
+    "languages": "Rust",
+    "year": "2022"
+  },
+  {
+    "name": "Tom P",
+    "url": "https://github.com/tplews98/advent_of_code_2022",
+    "languages": "Python",
+    "year": "2022"
+  },
+  {
+    "name": "Sam",
+    "url": "https://github.com/samboyer/adventofcode",
+    "languages": "a new language every day (languages TBC)",
+    "year": "2023"
+  },
+  {
+    "name": "James",
+    "url": "https://github.com/omegafusion/adventofcode",
+    "languages": "probably Rust",
+    "year": "2023"
+  },
+  {
+    "name": "Olli",
+    "url": "https://github.com/ollij93/AoC",
+    "languages": "C/C++",
+    "year": "2023"
+  },
+  {
+    "name": "Matt G",
+    "url": "https://github.com/mgreen89/aoc2023",
+    "languages": "Haskell",
+    "year": "2023"
+  },
+  {
+    "name": "Chris",
+    "url": "https://github.com/chuckds/aoc2023",
+    "languages": "python",
+    "year": "2023"
+  },
+  {
+    "name": "Rob Wilton",
+    "url": "https://github.com/rgwilton/AoC-2023",
+    "languages": "Scala",
+    "year": "2023"
+  },
+  {
+    "name": "Louis",
+    "url": "https://gitlab.com/ldm6/advent_of_code_2023",
+    "languages": "Python",
+    "year": "2023"
   }
 ]

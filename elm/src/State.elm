@@ -48,7 +48,7 @@ initialModel =
     , errors = []
     , sendPort = appSend
     , fetchResponse = FetchRepoDetails "" "" ""
-    , tabState = Tab.customInitialState "2021"
+    , tabState = Tab.customInitialState "2024"
     }
 
 
